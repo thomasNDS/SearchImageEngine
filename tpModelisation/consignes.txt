@@ -1,0 +1,24 @@
+r = cim.r
+g = cim.g
+b = cim.b
+
+r[i][j]		   rr = r[i][j] / 64
+g[i][j]		-> gg = 
+b[i][j]		   bb =
+
+Pas terrible de se trimballer avec un tableau à trois dimension
+-> On linéarise les trois tableaux grâce à la formule :
+k = rr + 4*gg + 16*bb
+
+Il y a un tableau h avec pour indice tous les k
+h[k] -> double
+Pour chaque pixel, on regarde sa valeur k et incrémente le compteur dans le tableau h
+
+h[k] = h[k] / (nx*ny) pour normaliser
+
+COMMANDES:
+cc rdjpeg.c histo.c -o histo
+./histo http://mrim.imag.fr/voc10/images/2008_000001.jpg
+
+cc rdjpeg.c proc.c histo.c -o histo
+./histo
