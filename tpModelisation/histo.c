@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     char *name;
     FILE* fileToWrite = NULL;
     int i;
-    int plafond = 10;
+    int plafond = 9637;
     char* url = argv[1];
 
     urlList = readList("urls.txt", &nbAns);
