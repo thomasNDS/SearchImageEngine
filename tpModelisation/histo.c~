@@ -7,12 +7,11 @@
 #include "rdjpeg.h"
 #include "proc.h"
 
-<<<<<<< HEAD
 // Definition ###################################
 double* makeHisto(char* name, FILE *fileToWrite);
 // ##############################################
 
-=======
+
 /**
  * Calcul le produit scalaire entre U et V 
  * @param U
@@ -20,7 +19,6 @@ double* makeHisto(char* name, FILE *fileToWrite);
  * @param N taille des vecteurs U && V
  * @return 
  */
->>>>>>> 1dabf6a874c418fcad243815fb81e0bbab116356
 double produitScalaire(double* U, double* V, int N) {
     double ps;
     int i;
@@ -42,9 +40,6 @@ float distanceEuclidienne(double* trainDescriptor, double* valDescriptor) {
     return produitScalaire(trainDescriptor, valDescriptor, 64);
 }
 
-<<<<<<< HEAD
-=======
-double* makeHisto(char* name, FILE *fileToWrite);
 
 /**
  * Fonction renvoyant un tableau de key contenant les n images les plus proches 
@@ -54,7 +49,6 @@ double* makeHisto(char* name, FILE *fileToWrite);
  * @param nombreImages : nombre d'images à utiliser dans la base d'image (de préférences, égale au nombre d'images)
  * @return 
  */
->>>>>>> 1dabf6a874c418fcad243815fb81e0bbab116356
 KEY* determinePlusProche(int nombreImagesProches, double* vecteurEntree, char* nomFichierVecteurs, int nombreImages) {
 
     FILE *fichierVecteurs = fopen(nomFichierVecteurs, "r");
@@ -76,16 +70,15 @@ KEY* determinePlusProche(int nombreImagesProches, double* vecteurEntree, char* n
     return image;
 }
 
-<<<<<<< HEAD
 void export2HTML (char* url, KEY* image, int nbResult, char ** urlList){
     FILE* fichier = NULL;
     int i;
 
-    fichier = fopen("search.html", "w+");
+    fichier = fopen("search.html", "w");
 
-    fprintf(fichier, "<h1>Resultat </h1> <IMG src=\"%s\"/> <br/>", url);
+    fprintf(fichier, "<h1>Image Source: </h1> <IMG src=\"%s\"/> <br/> <h1> Resultat(%d resultats les plus proches) </h1>", url, nbResult);
     for (i=0; i < nbResult; i++){
-	fprintf(fichier, "<IMG src=\"%s\"/> Distance: %f <br/>", urlList[image[i].k], image[i].d);	
+	fprintf(fichier, "<IMG src=\"%s\"/> Distance: %f Numero %d <br/>", urlList[image[i].k], image[i].d, image[i].k);	
     }
 
 
@@ -93,7 +86,6 @@ void export2HTML (char* url, KEY* image, int nbResult, char ** urlList){
     printf("Exporté vers search.html\n");
 }
 
-=======
 /**
  * Main 
  * Utilisation : 
@@ -103,7 +95,6 @@ void export2HTML (char* url, KEY* image, int nbResult, char ** urlList){
  * @param argv
  * @return 
  */
->>>>>>> 1dabf6a874c418fcad243815fb81e0bbab116356
 int main(int argc, char *argv[]) {
 
     char ** urlList;
@@ -116,7 +107,7 @@ int main(int argc, char *argv[]) {
 
     urlList = readList("urls.txt", &nbAns);
 
-    //#####################" INIT ##############################
+    //#####################" INIT ./histo init ############
     if (strcmp(argv[1], "init") == 0) {
         printf("init\n");
         fileToWrite = fopen("result.bin", "w");
@@ -127,12 +118,12 @@ int main(int argc, char *argv[]) {
         }
         fclose(fileToWrite);
     } else {
-    //#####################" SEARCH #############################
+    //##################" SEARCH: ./histo [url] ############
         printf("search   -%s- \n  ", url);
         double* histoImgRequest = makeHisto(url, NULL);
         KEY* image = determinePlusProche(10, histoImgRequest, "result.bin", plafond);
         qsort(image, plafond, sizeof (KEY), keyCompare);
-	export2HTML(url, image, 5, urlList);
+	export2HTML(url, image, 10, urlList);
     }
     /*------------------------------------------------*/
     exit(0);

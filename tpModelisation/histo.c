@@ -74,11 +74,11 @@ void export2HTML (char* url, KEY* image, int nbResult, char ** urlList){
     FILE* fichier = NULL;
     int i;
 
-    fichier = fopen("search.html", "w+");
+    fichier = fopen("search.html", "w");
 
-    fprintf(fichier, "<h1>Resultat </h1> <IMG src=\"%s\"/> <br/>", url);
+    fprintf(fichier, "<h1>Image Source: </h1> <IMG src=\"%s\"/> <br/> <h1> Resultat(%d resultats les plus proches) </h1>", url, nbResult);
     for (i=0; i < nbResult; i++){
-	fprintf(fichier, "<IMG src=\"%s\"/> Distance: %f <br/>", urlList[image[i].k], image[i].d);	
+	fprintf(fichier, "<IMG src=\"%s\"/> Distance: %f Numero %d <br/>", urlList[image[i].k], image[i].d, image[i].k);	
     }
 
 
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
 
     urlList = readList("urls.txt", &nbAns);
 
-    //#####################" INIT ##############################
+    //#####################" INIT ./histo init ############
     if (strcmp(argv[1], "init") == 0) {
         printf("init\n");
         fileToWrite = fopen("result.bin", "w");
@@ -118,12 +118,12 @@ int main(int argc, char *argv[]) {
         }
         fclose(fileToWrite);
     } else {
-    //#####################" SEARCH #############################
+    //##################" SEARCH: ./histo [url] ############
         printf("search   -%s- \n  ", url);
         double* histoImgRequest = makeHisto(url, NULL);
         KEY* image = determinePlusProche(10, histoImgRequest, "result.bin", plafond);
         qsort(image, plafond, sizeof (KEY), keyCompare);
-	export2HTML(url, image, 5, urlList);
+	export2HTML(url, image, 10, urlList);
     }
     /*------------------------------------------------*/
     exit(0);
@@ -181,12 +181,10 @@ double* makeHisto(char* name, FILE * fileToWrite) {
     for (i = 0; i < nbIntervalle; i++) {
         h[i] = h[i] / (cim.nx * cim.ny);
         somme += h[i];
-        // printf("%d ème valeur histo : %f\n", i, h[i]);
     }
     if (fileToWrite != NULL)
         fwrite(h, sizeof (double), 64, fileToWrite);
     return h;
-    // printf("somme : %f\n", somme);
 }
 
 
