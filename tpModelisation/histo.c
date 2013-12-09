@@ -25,6 +25,30 @@ float distanceEuclidienne(double* trainDescriptor, double* valDescriptor) {
 
 double* makeHisto(char* name, FILE *fileToWrite);
 
+
+KEY* determinePlusProche(int nombreImagesProches, double* vecteurEntree, char* nomFichierVecteurs, int nombreImages) {
+
+    FILE *fichierVecteurs = fopen(nomFichierVecteurs, "r");
+    KEY* image = calloc(nombreImages, sizeof (KEY));
+    if (fichierVecteurs == NULL) {
+        printf("Erreur lors de la lecture de %s", nomFichierVecteurs);
+    } else {
+        int i;
+        for (i = 0; i < nombreImages; i++) {
+            double buffer[64];
+            fread(buffer, sizeof (double), 64, fichierVecteurs);
+            double res = distanceEuclidienne(buffer, vecteurEntree);
+            KEY* k = (KEY*) malloc(sizeof (KEY));
+            //*k = {i, res};
+	    k->k = i;
+	    k->d = res;
+            image[i] = *k;
+        }
+    }
+    return image;
+}
+
+
 int main(int argc, char *argv[]) {
 
     char **urlList;
@@ -36,6 +60,8 @@ int main(int argc, char *argv[]) {
     char* url = argv[1];
 
     urlList = readList("urls.txt", &nbAns);
+
+    //#####################" INIT ##############################
     if (strcmp(argv[1], "init") == 0) {
         printf("init\n");
         fileToWrite = fopen("result.bin", "w");
@@ -46,37 +72,17 @@ int main(int argc, char *argv[]) {
         }
         fclose(fileToWrite);
     } else {
-        printf("search   -%s-  %d\n  ", argv[1], strcmp(argv[1], "init"));
+    //#####################" SEARCH #############################
+        printf("search   -%s- \n  ", url);
         double* h = makeHisto(url, NULL);
         KEY* image = determinePlusProche(3, h, "result.bin", plafond);
         qsort(image, plafond, sizeof (KEY), keyCompare);
         printf(" res :%d \n", image[0].k);
     }
-
     /*------------------------------------------------*/
-
     exit(0);
 }
 
-KEY* determinePlusProche(int nombreImagesProches, double* vecteurEntree, char* nomFichierVecteurs, int nombreImages) {
-
-    FILE *fichierVecteurs = fopen(nomFichierVecteurs, "r");
-    KEY* tabRes = calloc(nombreImages, sizeof (KEY));
-    if (fichierVecteurs == NULL) {
-        printf("Erreur lors de la lecture de %s", nomFichierVecteurs);
-    } else {
-        int i;
-        for (i = 0; i < nombreImages; i++) {
-            double buffer[64];
-            fread(buffer, sizeof (double), 64, fichierVecteurs);
-            double res = distanceEuclidienne(buffer, vecteurEntree);
-            KEY k = (KEY) malloc(sizeof (KEY));
-            k = {.d = i, .k = res};
-            tabRes[i] = k;
-        }
-    }
-    return tabRes;
-}
 
 double* makeHisto(char* name, FILE * fileToWrite) {
     int i, j, n, nx, ny, nb; /* j en vertical, i en horizontal */
