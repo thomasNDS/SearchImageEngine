@@ -7,6 +7,13 @@
 #include "rdjpeg.h"
 #include "proc.h"
 
+/**
+ * Calcul le produit scalaire entre U et V 
+ * @param U
+ * @param V
+ * @param N taille des vecteurs U && V
+ * @return 
+ */
 double produitScalaire(double* U, double* V, int N) {
     double ps;
     int i;
@@ -19,13 +26,26 @@ double produitScalaire(double* U, double* V, int N) {
     return ps;
 }
 
+/**
+ * Fonction renvoyant la distance euclidienne entre 2 tableaux de doubles de taille 64
+ * @param trainDescriptor
+ * @param valDescriptor
+ * @return distance euclidienne entre les deux paramètres en entrée
+ */
 float distanceEuclidienne(double* trainDescriptor, double* valDescriptor) {
     return produitScalaire(trainDescriptor, valDescriptor, 64);
 }
 
 double* makeHisto(char* name, FILE *fileToWrite);
 
-
+/**
+ * Fonction renvoyant un tableau de key contenant les n images les plus proches 
+ * @param nombreImagesProches : le nombre d'images le plus proche de l'image en entrée
+ * @param vecteurEntree : histogramme de l'image rentré en paramètre 
+ * @param nomFichierVecteurs : chemin du fichier contenant les histogrammes de notre base d'images
+ * @param nombreImages : nombre d'images à utiliser dans la base d'image (de préférences, égale au nombre d'images)
+ * @return 
+ */
 KEY* determinePlusProche(int nombreImagesProches, double* vecteurEntree, char* nomFichierVecteurs, int nombreImages) {
 
     FILE *fichierVecteurs = fopen(nomFichierVecteurs, "r");
@@ -48,7 +68,15 @@ KEY* determinePlusProche(int nombreImagesProches, double* vecteurEntree, char* n
     return image;
 }
 
-
+/**
+ * Main 
+ * Utilisation : 
+ * EXECUTABLE init //Permet de parser toutes les images du fichier urls.txt et d'en déduire les descripteurs qui sont écrit dans le fichier result.bin
+ * EXECUTABLE cheminImage //Permet de renvoyer les images les plus proches (selon la méthode euclidienne) de celle en paramètre
+ * @param argc
+ * @param argv
+ * @return 
+ */
 int main(int argc, char *argv[]) {
 
     char **urlList;
@@ -83,7 +111,13 @@ int main(int argc, char *argv[]) {
     exit(0);
 }
 
-
+/**
+ * Fonction qui renvoie l'histogramme(=descripteur) de l'image correspondant au chemin passé en paramètre. Cet histogramme 
+ * est inscrit dans le fichier fileToWrite
+ * @param name : chemin de l'image dont l'historamme est déduit
+ * @param fileToWrite : fichier dans lequel est écrit l'histogramme de l'image en paramètre 
+ * @return : l'histogramme de l'image
+ */
 double* makeHisto(char* name, FILE * fileToWrite) {
     int i, j, n, nx, ny, nb; /* j en vertical, i en horizontal */
     CIMAGE cim;
