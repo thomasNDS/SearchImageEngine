@@ -55,7 +55,7 @@ void export2HTML (char* url, KEY* image, int nbResult, char ** urlList){
 
     fprintf(fichier, "<h1>Resultat </h1> <IMG src=\"%s\"/> <br/>", url);
     for (i=0; i < nbResult; i++){
-	fprintf(fichier, "<IMG src=\"%s\"/> Distance: %f <br/>", urlList[image[i].k], image[i].d);	
+	fprintf(fichier, "<IMG src=\"%s\"/> Distance: %d <br/>", urlList[image[i].k], image[i].d);	
     }
 
 
