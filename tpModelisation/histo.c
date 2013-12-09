@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
     //#####################" SEARCH #############################
         printf("search   -%s- \n  ", url);
         double* h = makeHisto(url, NULL);
-        KEY* image = determinePlusProche(3, h, "result.bin", plafond);
+        KEY* image = determinePlusProche(10, h, "result.bin", plafond);
         qsort(image, plafond, sizeof (KEY), keyCompare);
         printf(" res :%d \n", image[0].k);
     }
