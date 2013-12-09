@@ -41,6 +41,33 @@ float distanceEuclidienne(double* trainDescriptor, double* valDescriptor) {
     return produitScalaire(trainDescriptor, valDescriptor, 64);
 }
 
+/**
+ * Calcul le produit scalaire entre U et V 
+ * @param U
+ * @param V
+ * @param N taille des vecteurs U && V
+ * @return 
+ */
+double produitScalaireFloat(float* U, float* V, int N) {
+    double ps;
+    int i;
+    for (ps = 0.0, i = 0; i < N; i++)
+        if (U[i] - V[i] > 0)
+            ps += (U[i] - V[i]);
+        else
+            ps -= (U[i] - V[i]);
+    return ps;
+}
+
+/**
+ * Fonction renvoyant la distance euclidienne entre 2 tableaux de doubles de taille 56
+ * @param trainDescriptor
+ * @param valDescriptor
+ * @return distance euclidienne entre les deux paramètres en entrée
+ */
+float distanceEuclidienneFloat(float* trainDescriptor, float* valDescriptor) {
+    return produitScalaireFloat(trainDescriptor, valDescriptor, 56);
+}
 
 /**
  * Fonction renvoyant un tableau de key contenant les n images les plus proches 
@@ -62,6 +89,34 @@ KEY* determinePlusProche(int nombreImagesProches, double* vecteurEntree, char* n
             double buffer[64];
             fread(buffer, sizeof (double), 64, fichierVecteurs);
             double res = distanceEuclidienne(buffer, vecteurEntree);
+            KEY* k = (KEY*) malloc(sizeof (KEY));
+	    k->k = i;
+	    k->d = res;
+            image[i] = *k;
+        }
+    }
+    return image;
+}
+/**
+ * Fonction renvoyant un tableau de key contenant les n images les plus proches 
+ * @param nombreImagesProches : le nombre d'images le plus proche de l'image en entrée
+ * @param vecteurEntree : histogramme de l'image rentré en paramètre 
+ * @param nomFichierVecteurs : chemin du fichier contenant les histogrammes de notre base d'images
+ * @param nombreImages : nombre d'images à utiliser dans la base d'image (de préférences, égale au nombre d'images)
+ * @return 
+ */
+KEY* determinePlusProcheGabor(int nombreImagesProches, float* vecteurEntree, char* nomFichierVecteurs, int nombreImages) {
+
+    FILE *fichierVecteurs = fopen(nomFichierVecteurs, "r");
+    KEY* image = calloc(nombreImages, sizeof (KEY));
+    if (fichierVecteurs == NULL) {
+        printf("Erreur lors de la lecture de %s", nomFichierVecteurs);
+    } else {
+        int i;
+        for (i = 0; i < nombreImages; i++) {
+            float buffer[56];
+            fread(buffer, sizeof (float), 56, fichierVecteurs);
+            float res =  distanceEuclidienneFloat(buffer, vecteurEntree);
             KEY* k = (KEY*) malloc(sizeof (KEY));
 	    k->k = i;
 	    k->d = res;
@@ -120,14 +175,16 @@ int main(int argc, char *argv[]) {
         fclose(fileToWrite);
 //##################" SEARCH: ./histo gabor [url] ############
     }else if (strcmp(argv[1], "gabor") == 0) {
-        double* histoImgRequest;
+        float* histoImgRequest;
 	float *eg;
 	CIMAGE cim;
 
-	read_cimage(argv[2],&cim);
+	url = argv[2];
+	read_cimage(url,&cim);
 	eg = egabor(cim,NDIR,NSCA,SIGMA0,LAMBDA0,SCALE);
-	histoImgRequest = (double*) eg;
-        KEY* image = determinePlusProche(10, histoImgRequest, "gabor.bin", plafond);
+	histoImgRequest = eg;
+	plafond = 1000;
+        KEY* image = determinePlusProcheGabor(10, histoImgRequest, "gabor.bin", plafond);
         qsort(image, plafond, sizeof (KEY), keyCompare);
 	export2HTML(url, image, 10, urlList);	    
 	}else {
@@ -138,7 +195,7 @@ int main(int argc, char *argv[]) {
         qsort(image, plafond, sizeof (KEY), keyCompare);
 	export2HTML(url, image, 10, urlList);
     }
-//cc rdjpeg.c proc.c histo.c -o histo
+//cc rdjpeg.c cgabor.c proc.c histo.c -o histo -lm
 //cc -o test_gabor rdjpeg.c cgabor.c test_gabor.c -lm
 
     /*------------------------------------------------*/
