@@ -6,6 +6,7 @@
 
 #include "rdjpeg.h"
 #include "proc.h"
+#include "cgabor.h"
 
 // Definition ###################################
 double* makeHisto(char* name, FILE *fileToWrite);
@@ -117,7 +118,19 @@ int main(int argc, char *argv[]) {
             makeHisto(name, fileToWrite);
         }
         fclose(fileToWrite);
-    } else {
+//##################" SEARCH: ./histo gabor [url] ############
+    }else if (strcmp(argv[1], "gabor") == 0) {
+        double* histoImgRequest;
+	float *eg;
+	CIMAGE cim;
+
+	read_cimage(argv[2],&cim);
+	eg = egabor(cim,NDIR,NSCA,SIGMA0,LAMBDA0,SCALE);
+	histoImgRequest = (double*) eg;
+        KEY* image = determinePlusProche(10, histoImgRequest, "gabor.bin", plafond);
+        qsort(image, plafond, sizeof (KEY), keyCompare);
+	export2HTML(url, image, 10, urlList);	    
+	}else {
     //##################" SEARCH: ./histo [url] ############
         printf("search   -%s- \n  ", url);
         double* histoImgRequest = makeHisto(url, NULL);
@@ -181,12 +194,10 @@ double* makeHisto(char* name, FILE * fileToWrite) {
     for (i = 0; i < nbIntervalle; i++) {
         h[i] = h[i] / (cim.nx * cim.ny);
         somme += h[i];
-        // printf("%d ème valeur histo : %f\n", i, h[i]);
     }
     if (fileToWrite != NULL)
         fwrite(h, sizeof (double), 64, fileToWrite);
     return h;
-    // printf("somme : %f\n", somme);
 }
 
 
