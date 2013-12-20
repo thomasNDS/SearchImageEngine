@@ -132,9 +132,9 @@ void export2HTML (char* url, KEY* image, int nbResult, char ** urlList){
 
     fichier = fopen("search.html", "w");
 
-    fprintf(fichier, "<h1>Image Source: </h1> <IMG src=\"%s\"/> <br/> <h1> Resultat(%d resultats les plus proches) </h1>", url, nbResult);
+    fprintf(fichier, "<h1>Image Source: </h1> <IMG height=\"100px\" width=\"100px\" src=\"%s\"/> <br/> <h1> Resultat(%d resultats les plus proches) </h1>", url, nbResult);
     for (i=0; i < nbResult; i++){
-	fprintf(fichier, "<IMG src=\"%s\"/> Distance: %f Numero %d <br/>", urlList[image[i].k], image[i].d, image[i].k);	
+	fprintf(fichier, "<IMG height=\"100px\" width=\"100px\" src=\"%s\"/> Distance: %f Numero %d <br/>", urlList[image[i].k], image[i].d, image[i].k);	
     }
 
 
